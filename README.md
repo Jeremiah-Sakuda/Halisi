@@ -105,6 +105,29 @@ test/                the invariant property suite (the spec) + scenario tests
 scripts/             provision-table, live-suite, swarm-bench
 ```
 
+## Testing & correctness
+
+The invariant is the spec, written first. `test/invariantSuite.ts` is a `fast-check` property suite —
+generating random forge / replay / reuse / concurrency programs and checking every decision against a
+canonical oracle — and it is applied to **both** stores. `MemoryClaimStore` runs it directly;
+`DynamoClaimStore` runs it through `FakeDynamo`, a faithful in-process double that exercises the *real*
+store code path (the same SDK commands, the same `TransactionCanceledException` + `CancellationReasons`,
+the same pagination). A dedicated property then asserts the two stores make identical decisions on every
+program, and a GSI-lag test confirms the guarantee never depends on an index read. The WebAuthn path is
+proven against genuine ES256 and Ed25519 assertions. A guard test fails the build if any scarcity
+vocabulary appears in the source.
+
+```bash
+npm test        # the full suite (memory + dynamo code paths)
+npm run typecheck
+```
+
+## Accessibility
+
+Keyboard focus is always visible (`:focus-visible`), the collapse is exposed to assistive tech as a
+labeled image with an `aria-live` result announcement, and `prefers-reduced-motion` is honored across
+the animation, the counters, and entrance transitions.
+
 ## Documentation
 
 - [`ARCHITECTURE.md`](./ARCHITECTURE.md) — data model, redemption algorithm, collapse query, the
