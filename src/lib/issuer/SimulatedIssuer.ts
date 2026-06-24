@@ -126,22 +126,39 @@ export class SimulatedAuthenticator {
     return reg;
   }
 
-  /** Produce a genuine assertion over an issued challenge. */
-  assert(challenge: Challenge): Assertion {
-    if (this.attestation === null) {
-      throw new Error("authenticator must register before it can assert");
-    }
+  /**
+   * Produce an assertion over an issued challenge.
+   *
+   * With no options this is a genuine assertion. The forgery options model the two ways an attacker
+   * fails verification: presenting a credential the relying party never registered (`forgeAttestation`,
+   * the realistic sybil move — spin up a fresh key), or tampering with the signed material
+   * (`forgeSignature`). Both are denied before the database.
+   */
+  assert(
+    challenge: Challenge,
+    opts: { forgeAttestation?: boolean; forgeSignature?: boolean } = {},
+  ): Assertion {
     const base = {
       tokenId: challenge.tokenId,
       contextId: challenge.contextId,
       challenge: challenge.challenge,
     };
+    if (this.attestation === null && !opts.forgeAttestation) {
+      throw new Error("authenticator must register before it can assert");
+    }
+    const attestation = opts.forgeAttestation
+      ? "forged-attestation-the-server-never-issued"
+      : (this.attestation as string);
+    let signature = signEd25519(signedMaterial(base), this.privateKey);
+    if (opts.forgeSignature) {
+      signature = signEd25519(`${signedMaterial(base)}.tampered`, this.privateKey);
+    }
     return {
       ...base,
       credentialId: this.credentialId,
       publicKey: this.publicKey,
-      attestation: this.attestation,
-      signature: signEd25519(signedMaterial(base), this.privateKey),
+      attestation,
+      signature,
     };
   }
 }
