@@ -134,12 +134,17 @@ export default function CollapseCanvas({ run }: { run: CollapseRun | null }) {
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
 
+    const reducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
     const frame = (now: number) => {
       const rect = canvas.getBoundingClientRect();
       ctx.clearRect(0, 0, rect.width, rect.height);
       const { particles, start } = stateRef.current;
       const elapsed = now - start;
-      const phase = Math.min(1, elapsed / DURATION);
+      // Honor reduced-motion: jump straight to the settled collapse instead of animating the flood.
+      const phase = reducedMotion ? 1 : Math.min(1, elapsed / DURATION);
 
       for (const p of particles) {
         let x: number;
