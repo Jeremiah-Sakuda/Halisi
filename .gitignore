@@ -1,0 +1,43 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# next.js
+/.next/
+/out/
+/build
+next-env.d.ts
+
+# testing
+/coverage
+
+# production
+/dist
+
+# environment (never commit secrets)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# private working notes — NOT part of the public product
+/notes/
+HANDOFF_PRD.md
+PRD.md
+STRATEGY*.md
+
+# os / editor
+.DS_Store
+*.pem
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vscode/
+.idea/
+
+# local AWS credentials / scratch
+/.aws/
+/scratch/
