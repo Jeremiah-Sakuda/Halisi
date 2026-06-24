@@ -1,0 +1,31 @@
+═══ Halisi · DynamoDB store dry run (local fake) ═══════════
+   when:   2026-06-24T17:49:09.260Z
+   region: us-east-1
+   table:  Halisi
+
+── table shape (LOCAL DRY RUN — not a live AWS run) ────────────
+   name:    Halisi
+   keys:    PK/HASH, SK/RANGE
+   gsi:     GSI1 [GSI1PK/HASH, GSI1SK/RANGE]
+   note:    run `npm run live` with AWS credentials to produce the live artifact.
+
+── invariant, scenario by scenario (live table) ───────────────
+   [PASS] genuine claim accepted: ACCEPTED
+   [PASS] same token replayed → denied: DENIED_REPLAY
+   [PASS] same credential, fresh token → duplicate: DENIED_DUPLICATE_IDENTITY
+   [PASS] forged credential → denied before the table: DENIED_FORGED
+   [PASS] collapse(ctx) = 1 distinct credential
+
+── sybil swarm on the live table (4000 attempts, 6 real credentials) ──
+   attempts:           4000
+   accepted:           6
+   denied (forged):    1358
+   denied (replay):    656
+   denied (duplicate): 1980
+   [PASS] collapsed to 6 distinct credentials (target 6)
+   write latency:      p50 0.01ms · p99 0.01ms
+   estimated cost:     $0.01
+
+═══ result ════════════════════════════════════════════════════
+   6 checks passed, 0 failed
+   ✓ the live table enforced the invariant on every check.
