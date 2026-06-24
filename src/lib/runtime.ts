@@ -4,6 +4,7 @@ import { DynamoClaimStore } from "@/lib/store/DynamoClaimStore";
 import { makeDocClient, tableName } from "@/lib/store/client";
 import type { Issuer } from "@/lib/issuer/Issuer";
 import { SimulatedIssuer } from "@/lib/issuer/SimulatedIssuer";
+import { WebAuthnIssuer } from "@/lib/issuer/WebAuthnIssuer";
 
 /**
  * Process-wide singletons selected by environment, so identical application code runs on either
@@ -21,6 +22,7 @@ import { SimulatedIssuer } from "@/lib/issuer/SimulatedIssuer";
 const g = globalThis as unknown as {
   __halisiStore?: ClaimStore;
   __halisiIssuer?: SimulatedIssuer;
+  __halisiWebAuthn?: WebAuthnIssuer;
 };
 
 export function getStore(): ClaimStore {
@@ -46,4 +48,10 @@ export function getSimulatedIssuer(): SimulatedIssuer {
 
 export function getIssuer(): Issuer {
   return getSimulatedIssuer();
+}
+
+/** The production attestation source: real passkey assertions. */
+export function getWebAuthnIssuer(): WebAuthnIssuer {
+  if (!g.__halisiWebAuthn) g.__halisiWebAuthn = new WebAuthnIssuer();
+  return g.__halisiWebAuthn;
 }
