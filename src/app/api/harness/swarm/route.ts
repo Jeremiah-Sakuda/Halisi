@@ -1,7 +1,7 @@
 import { badRequest, isNonEmptyString, ok, readJson } from "@/lib/api";
 import { ledger } from "@/lib/ledger";
 import { metrics } from "@/lib/metricsStore";
-import { getSimulatedIssuer, getStore } from "@/lib/runtime";
+import { getSimulatedIssuer, getStore, storeKind } from "@/lib/runtime";
 import { type SwarmMode, runSwarm } from "@/lib/harness/swarm";
 
 export const runtime = "nodejs";
@@ -62,5 +62,5 @@ export async function POST(request: Request) {
     },
   );
 
-  return ok(summary);
+  return ok({ ...summary, store: storeKind() });
 }
