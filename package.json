@@ -4,6 +4,9 @@
   "private": true,
   "description": "One claim per attested human credential — sybil-resistance enforced at the DynamoDB write.",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
