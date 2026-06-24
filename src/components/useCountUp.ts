@@ -9,6 +9,16 @@ export function useCountUp(target: number, trigger: number, duration = 2600): nu
   const fromRef = useRef(0);
 
   useEffect(() => {
+    // Respect reduced-motion: land on the value immediately rather than tweening.
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    ) {
+      fromRef.current = target;
+      setValue(target);
+      return;
+    }
+
     const from = fromRef.current;
     const start = performance.now();
     let raf = 0;
