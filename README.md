@@ -134,6 +134,8 @@ the animation, the counters, and entrance transitions.
   two-store seam, the honest ceiling.
 - [`DISTINCTNESS.md`](./DISTINCTNESS.md) — what Halisi is, and what it deliberately is not.
 - [`SUBMISSION.md`](./SUBMISSION.md) — the submission writeup.
+- [`SECURITY.md`](./SECURITY.md) — what counts as a vulnerability, and the honest ceiling.
+- [`DEPLOY.md`](./DEPLOY.md) — provisioning, IAM policy, Vercel env, verification.
 - [`docs/architecture.svg`](./docs/architecture.svg) — the architecture diagram.
 - [`live-artifacts/`](./live-artifacts/) — how to capture the live DynamoDB run.
 
