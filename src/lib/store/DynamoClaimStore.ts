@@ -16,11 +16,13 @@ import {
   ATTR,
   GSI1_NAME,
   SK,
+  TTL_ATTR,
   claimGsi1Sk,
   claimPk,
   collapseGsi1Pk,
   contextPk,
   redemptionPk,
+  redemptionTtl,
 } from "@/lib/store/schema";
 
 /** Just the one method DynamoClaimStore needs — satisfied by a real DocumentClient or the fake. */
@@ -104,6 +106,8 @@ export class DynamoClaimStore implements ClaimStore {
               [ATTR.sk]: SK.redemption,
               tokenId: input.tokenId,
               redeemedAt: input.createdAt,
+              // TTL bounds redemption-row growth; claims (the durable record) carry no TTL.
+              [TTL_ATTR]: redemptionTtl(input.createdAt),
             },
             ConditionExpression: `attribute_not_exists(${ATTR.pk})`,
           },

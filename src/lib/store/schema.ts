@@ -25,6 +25,17 @@ export const ATTR = {
 
 export const GSI1_NAME = "GSI1";
 
+/** DynamoDB TTL attribute (epoch seconds). Only redemption tokens carry it — claims are durable. */
+export const TTL_ATTR = "expiresAt";
+
+/** How long a burned redemption token lingers before TTL reclaims it. Long enough to defeat any replay. */
+export const REDEMPTION_TTL_DAYS = 90;
+
+/** Compute the TTL epoch-seconds value for a write happening at `nowMs`. */
+export function redemptionTtl(nowMs: number): number {
+  return Math.floor(nowMs / 1000) + REDEMPTION_TTL_DAYS * 24 * 60 * 60;
+}
+
 export const SK = {
   context: "CTX",
   redemption: "REDEMPTION",
