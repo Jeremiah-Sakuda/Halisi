@@ -29,6 +29,7 @@ export default function Hero() {
       <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 28, flexWrap: "wrap" }}>
         <a className="btn btn-primary" href="#collapse">Watch the collapse</a>
         <a className="btn" href="#how">How it works</a>
+        <a className="btn" href="#who-pays">Who pays</a>
         <a className="btn" href="/passkey">Try a real passkey</a>
       </div>
     </header>
