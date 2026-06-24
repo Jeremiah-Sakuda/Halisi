@@ -15,29 +15,33 @@ import { SimulatedIssuer } from "@/lib/issuer/SimulatedIssuer";
  * The store is a singleton because MemoryClaimStore holds state in process; the deployed app uses
  * `dynamo`, where the durable state lives in the table and any instance is interchangeable.
  */
-let storeSingleton: ClaimStore | null = null;
+// Stash singletons on globalThis so every route module shares one instance. This matters on the
+// memory backend, where the durable state lives in process — without it, /api/stats would read a
+// different store than /api/claim wrote to. On dynamo the state lives in the table, so it is moot.
+const g = globalThis as unknown as {
+  __halisiStore?: ClaimStore;
+  __halisiIssuer?: SimulatedIssuer;
+};
 
 export function getStore(): ClaimStore {
-  if (storeSingleton) return storeSingleton;
+  if (g.__halisiStore) return g.__halisiStore;
   const kind = (process.env.HALISI_STORE || "memory").toLowerCase();
-  storeSingleton =
+  g.__halisiStore =
     kind === "dynamo" ? new DynamoClaimStore(makeDocClient(), tableName()) : new MemoryClaimStore();
-  return storeSingleton;
+  return g.__halisiStore;
 }
 
 export function storeKind(): "memory" | "dynamo" {
   return (process.env.HALISI_STORE || "memory").toLowerCase() === "dynamo" ? "dynamo" : "memory";
 }
 
-let issuerSingleton: SimulatedIssuer | null = null;
-
 /**
  * The simulated issuer drives the demo swarm and the interactive flow. The production WebAuthn issuer
  * implements the same {@link Issuer} interface and slots in behind the same redemption code.
  */
 export function getSimulatedIssuer(): SimulatedIssuer {
-  if (!issuerSingleton) issuerSingleton = new SimulatedIssuer();
-  return issuerSingleton;
+  if (!g.__halisiIssuer) g.__halisiIssuer = new SimulatedIssuer();
+  return g.__halisiIssuer;
 }
 
 export function getIssuer(): Issuer {
