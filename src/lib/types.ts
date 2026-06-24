@@ -37,6 +37,8 @@ export interface ClaimOutcome {
   contextId: string;
   /** Present only when ACCEPTED. */
   claimId?: string;
+  /** The verified credential fingerprint, when the assertion verified (accepted or denied at write). */
+  fingerprint?: string;
   /** Wall-clock time spent inside the store's conditional write, in milliseconds. */
   latencyMs: number;
 }
