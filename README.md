@@ -1,5 +1,7 @@
 # Halisi
 
+[![ci](https://github.com/Jeremiah-Sakuda/Halisi/actions/workflows/ci.yml/badge.svg)](https://github.com/Jeremiah-Sakuda/Halisi/actions/workflows/ci.yml)
+
 **One claim per attested human credential — enforced at the database write.**
 
 Halisi collapses a swarm of synthetic identities down to the real humans behind them. Uniqueness
@@ -100,6 +102,15 @@ src/app/             the abundant-action surface + the collapse view
 test/                the invariant property suite (the spec) + scenario tests
 scripts/             provision-table, live-suite, swarm-bench
 ```
+
+## Documentation
+
+- [`ARCHITECTURE.md`](./ARCHITECTURE.md) — data model, redemption algorithm, collapse query, the
+  two-store seam, the honest ceiling.
+- [`DISTINCTNESS.md`](./DISTINCTNESS.md) — what Halisi is, and what it deliberately is not.
+- [`SUBMISSION.md`](./SUBMISSION.md) — the submission writeup.
+- [`docs/architecture.svg`](./docs/architecture.svg) — the architecture diagram.
+- [`live-artifacts/`](./live-artifacts/) — how to capture the live DynamoDB run.
 
 ## License
 
