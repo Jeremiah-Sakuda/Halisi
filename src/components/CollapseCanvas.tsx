@@ -199,9 +199,13 @@ export default function CollapseCanvas({ run }: { run: CollapseRun | null }) {
     };
   }, []);
 
+  const label = run
+    ? `Collapse: ${run.attempts.toLocaleString()} attempts reduced to ${run.distinctFingerprints} distinct attested credential${run.distinctFingerprints === 1 ? "" : "s"}.`
+    : "Collapse view. Fire a swarm to begin.";
+
   return (
-    <div style={{ position: "relative", width: "100%", height: "100%" }}>
-      <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block" }} />
+    <div style={{ position: "relative", width: "100%", height: "100%" }} role="img" aria-label={label}>
+      <canvas ref={canvasRef} aria-hidden="true" style={{ width: "100%", height: "100%", display: "block" }} />
       {!run && (
         <div
           style={{

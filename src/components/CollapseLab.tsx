@@ -103,6 +103,12 @@ export default function CollapseLab() {
         <CollapseCanvas run={run} />
       </div>
 
+      <div className="sr-only" role="status" aria-live="polite">
+        {run
+          ? `${run.attempts.toLocaleString()} attempts collapsed to ${run.distinctFingerprints} distinct attested credentials. ${run.accepted} accepted, ${run.deniedForged + run.deniedReplay + run.deniedDuplicate} denied at the write. p99 ${run.p99LatencyMs.toFixed(1)} milliseconds.`
+          : ""}
+      </div>
+
       {error && <div style={{ color: "var(--forged)", fontSize: 13 }}>⚠ {error}</div>}
 
       <StatsBar run={run} />
