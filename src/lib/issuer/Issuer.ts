@@ -48,7 +48,12 @@ export type VerifyResult =
   | { ok: true; fingerprint: string; tokenId: string }
   | { ok: false; reason: string };
 
-export interface Issuer {
+/**
+ * The interface is generic over the assertion shape so the simulated and the real WebAuthn issuers —
+ * whose assertions differ — both slot behind the same redemption code. `redeem` only needs
+ * `issueChallenge` and `verify`, and only uses the verified `{ fingerprint, tokenId }`.
+ */
+export interface Issuer<A = Assertion> {
   /** Issue a single-use challenge bound to a token + context. */
   issueChallenge(contextId: string): Promise<Challenge>;
 
@@ -60,5 +65,5 @@ export interface Issuer {
    * at the database write (the redemption burn), so a replayed-but-valid assertion still verifies
    * here and is denied at the write — that is the point.
    */
-  verify(assertion: Assertion): Promise<VerifyResult>;
+  verify(assertion: A): Promise<VerifyResult>;
 }

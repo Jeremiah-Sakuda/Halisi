@@ -1,4 +1,4 @@
-import type { Assertion, Issuer } from "@/lib/issuer/Issuer";
+import type { Issuer } from "@/lib/issuer/Issuer";
 import type { ClaimStore } from "@/lib/store/ClaimStore";
 import type { ClaimOutcome } from "@/lib/types";
 
@@ -12,10 +12,10 @@ import type { ClaimOutcome } from "@/lib/types";
  * `latencyMs` is the time spent in the decisive step — the conditional write for anything that reaches
  * the database, or the verification for a forged assertion that does not.
  */
-export async function redeem(
-  issuer: Issuer,
+export async function redeem<A extends { contextId: string }>(
+  issuer: Issuer<A>,
   store: ClaimStore,
-  assertion: Assertion,
+  assertion: A,
   claimId: string,
   now: number,
 ): Promise<ClaimOutcome> {
