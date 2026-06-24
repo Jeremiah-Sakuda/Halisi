@@ -11,10 +11,11 @@ import {
   DescribeTableCommand,
   DynamoDBClient,
   ResourceNotFoundException,
+  UpdateTimeToLiveCommand,
   waitUntilTableExists,
 } from "@aws-sdk/client-dynamodb";
 
-import { ATTR, GSI1_NAME } from "@/lib/store/schema";
+import { ATTR, GSI1_NAME, TTL_ATTR } from "@/lib/store/schema";
 
 const region = process.env.AWS_REGION || "us-east-1";
 const table = process.env.HALISI_TABLE || "Halisi";
@@ -73,7 +74,16 @@ async function main(): Promise<void> {
 
   console.log("→ create requested; waiting for ACTIVE…");
   await waitUntilTableExists({ client, maxWaitTime: 120 }, { TableName: table });
-  console.log(`→ table "${table}" is ACTIVE with ${GSI1_NAME} and Streams enabled.`);
+
+  // Bound redemption-row growth: TTL reclaims burned tokens (claims carry no TTL and are durable).
+  await client.send(
+    new UpdateTimeToLiveCommand({
+      TableName: table,
+      TimeToLiveSpecification: { Enabled: true, AttributeName: TTL_ATTR },
+    }),
+  );
+
+  console.log(`→ table "${table}" is ACTIVE with ${GSI1_NAME}, Streams, and TTL on ${TTL_ATTR}.`);
 }
 
 main().catch((error) => {
