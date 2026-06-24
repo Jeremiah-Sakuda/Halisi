@@ -63,12 +63,22 @@ h3 {
 .mono {
   font-family: var(--mono);
   font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere; /* long single-table keys wrap instead of overflowing on small screens */
 }
 
 .shell {
   max-width: 1120px;
   margin: 0 auto;
   padding: 0 24px;
+}
+
+@media (max-width: 600px) {
+  .shell {
+    padding: 0 16px;
+  }
+  .panel {
+    border-radius: 12px;
+  }
 }
 
 .panel {
