@@ -12,6 +12,9 @@ next-env.d.ts
 # testing
 /coverage
 
+# typescript incremental build info
+*.tsbuildinfo
+
 # production
 /dist
 
