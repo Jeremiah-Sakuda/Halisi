@@ -23,16 +23,25 @@ export interface Challenge {
 
 /**
  * What the client returns: an assertion over the issued challenge. Shape mirrors a WebAuthn
- * assertion (a credential id, the signed challenge material, and a signature).
+ * assertion — a credential id, the public key, and a signature over the challenge.
+ *
+ * `attestation` binds (credentialId, publicKey) to a real registration ceremony: the server issues it
+ * (an HMAC under the server secret) only when a credential is genuinely registered. A client cannot
+ * fabricate it, so it cannot invent new credentials — which is what caps a swarm at M real credentials.
+ * This keeps verification fully stateless (no server-side registry read on the hot path).
  */
 export interface Assertion {
   tokenId: string;
   contextId: string;
   credentialId: string;
-  /** The signature over the challenge (+ context), produced by the authenticator. */
-  signature: string;
-  /** The credential public key, in the form the verifier needs. */
+  /** The issued challenge the authenticator signed over (echoed back, as WebAuthn echoes clientData). */
+  challenge: string;
+  /** The credential public key (trusted only because `attestation` proves the server registered it). */
   publicKey: string;
+  /** Server-issued proof that this (credentialId, publicKey) pair was registered. */
+  attestation: string;
+  /** The authenticator's signature over the issued challenge material. */
+  signature: string;
 }
 
 export type VerifyResult =
