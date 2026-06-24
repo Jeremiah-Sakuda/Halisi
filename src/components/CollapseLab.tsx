@@ -112,6 +112,12 @@ export default function CollapseLab() {
       {error && <div style={{ color: "var(--forged)", fontSize: 13 }}>⚠ {error}</div>}
 
       <StatsBar run={run} />
+      {run && store === "memory" && (
+        <div className="faint" style={{ fontSize: 12 }}>
+          Latency and cost are measured on the in-process engine — run on <span className="mono">HALISI_STORE=dynamo</span>{" "}
+          for live DynamoDB figures. The collapse count is exact on either backend.
+        </div>
+      )}
       <DenialLegend run={run} />
       <NodeList run={run} />
     </div>
