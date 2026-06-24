@@ -7,8 +7,8 @@ attested credentials a swarm of attempts actually represents.
 That framing is deliberately narrow, and it is what sets Halisi apart from neighboring ideas that also
 enforce correctness at the database write:
 
-- **It is not an inventory or no-oversell system.** There is no scarce pool, nothing decrements, nothing
-  sells out. The protected action — a vote, a signup, a free trial — is *abundant*. Halisi rations
+- **It does not guard a finite pool.** There is no scarce supply, nothing decrements, nothing is ever
+  exhausted. The protected action — a vote, a signup, a free trial — is *abundant*. Halisi rations
   **identity**, never a finite good. If anything here ever "ran out," it would be the wrong product.
 
 - **It is not a tamper-evident log or a notary.** Halisi does not exist to prove that a record was not
