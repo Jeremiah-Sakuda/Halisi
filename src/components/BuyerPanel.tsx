@@ -1,0 +1,65 @@
+/**
+ * The business case, in the product itself: B2C-facing, B2B-paid. End users experience an abundant
+ * action; platforms pay Halisi to keep it honest. Kept on-message — Halisi rations identity, never a
+ * finite good.
+ */
+export default function BuyerPanel() {
+  return (
+    <section id="who-pays" style={{ padding: "20px 0 8px", display: "grid", gap: 18 }}>
+      <div>
+        <div className="eyebrow">Who pays for this</div>
+        <h2 style={{ fontSize: 26, marginTop: 8 }}>Consumer-facing, platform-paid.</h2>
+        <p className="muted" style={{ maxWidth: 700, marginTop: 10, fontSize: 15, lineHeight: 1.6 }}>
+          End users just experience an abundant action — one vote, one trial, one allocation. Platforms pay
+          Halisi to keep that action honest: a usage-based fee <strong style={{ color: "var(--text)" }}>per
+          accepted unique claim</strong>. Denials are free — we only charge when exactly one real human is
+          let through.
+        </p>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
+        <Wedge
+          tag="Wedge · Web3"
+          title="Airdrop sybil resistance"
+          body="Token distributions routinely lose double-digit percentages of allocation to sybils. “One allocation per attested credential” turns that loss into a write-time guarantee."
+        />
+        <Wedge
+          tag="Wedge · PLG"
+          title="Free-trial & fake-signup abuse"
+          body="Trial farming burns infra spend and pollutes activation metrics. “One trial per real credential” maps cleanly to deny-at-write, not ban-tomorrow."
+        />
+        <Wedge
+          tag="Adjacent"
+          title="Voting · reviews · waitlists"
+          body="Community polls, review integrity, and early-access fairness are the same shape — an abundant action that has to stay one-per-human."
+        />
+      </div>
+
+      <div className="panel" style={{ padding: 18, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
+        <ROI value="≈ $0.00001" label="cost per denied fake at the write" sub="forged tokens never reach the table" />
+        <ROI value="orders of magnitude" label="increase in cost-to-fake" sub="every fake needs a real, registered authenticator" />
+        <ROI value="pennies / 10k" label="DynamoDB write cost" sub="on-demand, high-margin per-claim pricing" />
+      </div>
+    </section>
+  );
+}
+
+function Wedge({ tag, title, body }: { tag: string; title: string; body: string }) {
+  return (
+    <div className="panel" style={{ padding: 18 }}>
+      <div className="eyebrow" style={{ color: "var(--accent-2)" }}>{tag}</div>
+      <h3 style={{ fontSize: 16, marginTop: 10 }}>{title}</h3>
+      <p className="muted" style={{ fontSize: 13.5, lineHeight: 1.55, marginTop: 8 }}>{body}</p>
+    </div>
+  );
+}
+
+function ROI({ value, label, sub }: { value: string; label: string; sub: string }) {
+  return (
+    <div>
+      <div className="mono" style={{ fontSize: 22, fontWeight: 700, color: "var(--accent)" }}>{value}</div>
+      <div style={{ fontSize: 13, color: "var(--text)", marginTop: 4 }}>{label}</div>
+      <div className="faint" style={{ fontSize: 12, marginTop: 2 }}>{sub}</div>
+    </div>
+  );
+}

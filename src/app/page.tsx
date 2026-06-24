@@ -1,5 +1,6 @@
 import AbundantAction from "@/components/AbundantAction";
 import ArchitecturePeek from "@/components/ArchitecturePeek";
+import BuyerPanel from "@/components/BuyerPanel";
 import CollapseLab from "@/components/CollapseLab";
 import Hero from "@/components/Hero";
 
@@ -14,6 +15,9 @@ export default function Home() {
           <CollapseLab />
         </div>
       </section>
+
+      <div style={{ height: 36 }} />
+      <BuyerPanel />
 
       <div style={{ height: 36 }} />
       <ArchitecturePeek />
