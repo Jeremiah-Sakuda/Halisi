@@ -57,9 +57,11 @@ gets **at most M** accepted claims — the rest fail at the write, in single-dig
                          │   conditional TransactWriteItems │
                          │   • burn  REDEMPTION#<tokenId>   │  attribute_not_exists  → replay denied
                          │   • write CLAIM#<ctx>#<fp>       │  attribute_not_exists  → duplicate denied
-                         │   GSI1 (FP#<fp>) ── collapse ────┼──▶ N distinct credentials
-                         │   Streams ───────────────────────┼──▶ live ledger / collapse feed
+                         │   GSI1 (CTX#<ctx>) ─ collapse ───┼──▶ N distinct credentials
+                         │   Streams (enabled, prod path) ──┼──▶ live ledger
                          └─────────────────────────────────┘
+              (in the demo the claim path publishes to the SSE ledger in-process;
+               the table has Streams enabled for the production consumer)
 ```
 
 See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the full data model, the redemption algorithm, and the

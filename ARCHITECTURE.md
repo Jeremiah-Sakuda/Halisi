@@ -34,8 +34,10 @@ of N attempts collapses to M distinct credentials.
                          │     • Put REDEMPTION#<tokenId>             │  attribute_not_exists → REPLAY
                          │     • Put CLAIM#<ctx>#<fp>                 │  attribute_not_exists → DUPLICATE
                          │   GSI1 (CTX#<ctx>) ── collapse Query ──────┼──▶ N distinct credentials
-                         │   Streams ─────────────────────────────────┼──▶ SSE live ledger
+                         │   Streams (enabled) ───── prod consumer ───┼┄▶ SSE live ledger
                          └───────────────────────────────────────────┘
+   In the demo the claim path publishes to the SSE ledger in-process (ledger.ts); the table has Streams
+   enabled (NEW_IMAGE) so a production consumer can drive the same feed without code changes downstream.
 ```
 
 The two seams:

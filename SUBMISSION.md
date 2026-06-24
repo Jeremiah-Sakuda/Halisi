@@ -28,7 +28,8 @@ query, not an ML guess.
   distinguish a replay from a duplicate identity.
 - **One GSI for the collapse.** `GSI1` partitions every claim under its context, so counting distinct
   credentials is a single `Query`, never a scan.
-- **Streams** fan each accepted claim out to the live ledger (SSE) that drives the collapse view.
+- **Streams** are enabled (`NEW_IMAGE`) as the production fan-out for the live ledger; the demo publishes
+  each accepted claim to the SSE feed in-process so it runs with no extra infrastructure.
 - **On-demand capacity** — the cost story is pennies at 10k writes.
 
 See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the full data model and the redemption algorithm.

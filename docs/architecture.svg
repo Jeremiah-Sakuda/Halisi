@@ -45,9 +45,9 @@
   <text x="340" y="472" fill="#35e3b4" font-size="12">→ N distinct attested credentials</text>
 
   <rect x="614" y="410" width="270" height="74" rx="10" fill="#0e1118" stroke="#1c2230"/>
-  <text x="630" y="434" fill="#eef1f7" font-size="13" font-weight="600">Streams</text>
-  <text x="630" y="454" fill="#9aa3b6" font-size="12">accepted claim → consumer</text>
-  <text x="630" y="472" fill="#9aa3b6" font-size="12">→ SSE live ledger / collapse view</text>
+  <text x="630" y="434" fill="#eef1f7" font-size="13" font-weight="600">Streams (enabled) — prod fan-out</text>
+  <text x="630" y="454" fill="#9aa3b6" font-size="12">accepted claim → consumer → SSE ledger</text>
+  <text x="630" y="472" fill="#9aa3b6" font-size="12">demo publishes in-process to the same feed</text>
 
   <!-- arrows -->
   <line x1="240" y1="180" x2="298" y2="180" stroke="#5b6478" stroke-width="1.5" marker-end="url(#arrow)"/>
