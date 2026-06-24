@@ -61,6 +61,18 @@ distribution (airdrop sybil resistance) and growth/PLG platforms fighting free-t
 signups; adjacent: community voting, review integrity, waitlist fairness. Usage-based pricing **per
 accepted unique claim** — denials are free; we only charge when exactly one real human is let through.
 
+## What's genuinely new
+
+Anti-abuse today is overwhelmingly **heuristic and retrospective** — score the traffic, flag anomalies,
+ban accounts tomorrow. Halisi's contribution is to make uniqueness a **synchronous database invariant**
+keyed on an **unforgeable attestation**, and to prove it the way you'd prove a correctness property:
+one `fast-check` oracle holds an in-memory engine and the real DynamoDB store code path to *identical*
+decisions on thousands of randomized forge/replay/reuse programs. The economic point is concrete — every
+fake now needs a real, registered authenticator, so the **cost-to-fake rises by orders of magnitude**
+while a denied attempt costs the platform essentially nothing (a forged token never even reaches the
+table). That is the difference between "we'll catch most of them eventually" and "at most M get through,
+decided at the write."
+
 ## What makes it distinct
 
 See [`DISTINCTNESS.md`](./DISTINCTNESS.md). In one line: Halisi rations **identity**, not a finite good,
@@ -73,3 +85,20 @@ npm install
 npm test        # the invariant property suite (both stores)
 npm run dev     # the demo at http://localhost:3000
 ```
+
+## Submission status
+
+Ready in the repo:
+
+- [x] Working full-stack app (Next.js + DynamoDB), runs locally on the in-process engine and on `dynamo`
+- [x] Architecture diagram (`docs/architecture.svg`) + data model + redemption algorithm
+- [x] Distinctness statement (`DISTINCTNESS.md`)
+- [x] The invariant proven in CI on both stores; WebAuthn verification proven on ES256 + Ed25519
+- [x] Provision + live-capture + benchmark scripts (`npm run provision` / `live` / `swarm`)
+
+Pending (account-gated — one session each, scripts already written):
+
+- [ ] Live DynamoDB run captured → `live-artifacts/live-run.txt` + console screenshots (`npm run provision && npm run live`)
+- [ ] Vercel deployment + public URL (set env per `DEPLOY.md`, then `vercel --prod`)
+- [ ] < 3-minute demo video following the collapse beat sheet
+- [ ] Vercel Team ID recorded in the Devpost submission
