@@ -55,11 +55,13 @@ Partition key `PK`, sort key `SK`. One global secondary index `GSI1` (`GSI1PK`, 
 | Entity | PK | SK | Key attributes | Purpose |
 | --- | --- | --- | --- | --- |
 | Context | `CTX#<contextId>` | `CTX` | `label, kind, createdAt` | the abundant-action definition |
-| Redemption | `REDEMPTION#<tokenId>` | `REDEMPTION` | `redeemedAt` | single-use token guard |
+| Redemption | `REDEMPTION#<tokenId>` | `REDEMPTION` | `redeemedAt`, `expiresAt` (TTL) | single-use token guard |
 | Claim | `CLAIM#<contextId>#<fp>` | `CLAIM` | `claimId, fp, contextId, createdAt`, `GSI1PK=CTX#<contextId>`, `GSI1SK=FP#<fp>#<claimId>` | one per credential per context |
 
 Billing is **on-demand** (pay per request) — the cost story is pennies at 10k writes. Streams are
-enabled with `NEW_IMAGE` to fan accepted claims out to the live ledger.
+enabled with `NEW_IMAGE` for the production ledger fan-out. A **TTL** on `expiresAt` reclaims burned
+redemption tokens after ~90 days so the table does not grow without bound; claims carry no TTL and are
+durable.
 
 ## The redemption algorithm
 
