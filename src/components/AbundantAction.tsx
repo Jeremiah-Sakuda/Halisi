@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import LiveLedger from "./LiveLedger";
 
 interface CastResult {
   decision: string;
@@ -133,6 +134,10 @@ export default function AbundantAction() {
           replay of the same token → {replay}
         </div>
       )}
+
+      <div style={{ borderTop: "1px solid var(--border)", paddingTop: 14 }}>
+        {contextId && <LiveLedger contextId={contextId} />}
+      </div>
     </div>
   );
 }
