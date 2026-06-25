@@ -143,6 +143,9 @@ export default function CollapseLab() {
       )}
       <DenialLegend run={run} />
       <NodeList run={run} />
+      <a href="/proof" style={{ fontSize: 13, color: "var(--accent)", fontWeight: 600, textDecoration: "none" }}>
+        Think the real DynamoDB would behave differently? See both engines run in lockstep →
+      </a>
     </div>
   );
 }
