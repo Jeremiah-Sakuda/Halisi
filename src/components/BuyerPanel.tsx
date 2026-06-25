@@ -22,6 +22,8 @@ export default function BuyerPanel() {
           tag="Wedge · Web3"
           title="Airdrop sybil resistance"
           body="Token distributions routinely lose double-digit percentages of allocation to sybils. “One allocation per attested credential” turns that loss into a write-time guarantee."
+          href="/airdrop"
+          cta="Try the airdrop flow →"
         />
         <Wedge
           tag="Wedge · PLG"
@@ -44,12 +46,17 @@ export default function BuyerPanel() {
   );
 }
 
-function Wedge({ tag, title, body }: { tag: string; title: string; body: string }) {
+function Wedge({ tag, title, body, href, cta }: { tag: string; title: string; body: string; href?: string; cta?: string }) {
   return (
     <div className="panel" style={{ padding: 18 }}>
       <div className="eyebrow" style={{ color: "var(--accent-2)" }}>{tag}</div>
       <h3 style={{ fontSize: 16, marginTop: 10 }}>{title}</h3>
       <p className="muted" style={{ fontSize: 13.5, lineHeight: 1.55, marginTop: 8 }}>{body}</p>
+      {href && cta && (
+        <a href={href} style={{ display: "inline-block", marginTop: 10, fontSize: 13, color: "var(--accent)", fontWeight: 600, textDecoration: "none" }}>
+          {cta}
+        </a>
+      )}
     </div>
   );
 }
