@@ -15,10 +15,12 @@ function uuid(): string {
 }
 
 export default function CollapseLab() {
-  const [contextId, setContextId] = useState(uuid);
+  const [baseId, setBaseId] = useState(uuid);
+  const [fireCount, setFireCount] = useState(0);
   const [mode, setMode] = useState<string>("mixed");
   const [count, setCount] = useState(10_000);
-  const [m, setM] = useState(7);
+  const [m, setM] = useState(3);
+  const [seed, setSeed] = useState(2026);
   const [running, setRunning] = useState(false);
   const [run, setRun] = useState<CollapseRun | null>(null);
   const [store, setStore] = useState<string | null>(null);
@@ -27,11 +29,20 @@ export default function CollapseLab() {
   async function fire() {
     setRunning(true);
     setError(null);
+    // A fresh context per fire keeps each run independent — so the SAME seed reproduces the SAME result.
+    const fc = fireCount + 1;
+    setFireCount(fc);
     try {
       const res = await fetch("/api/harness/swarm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contextId, count, distinctCredentials: mode === "forged" ? 0 : m, mode }),
+        body: JSON.stringify({
+          contextId: `${baseId}-${fc}`,
+          count,
+          distinctCredentials: mode === "forged" ? 0 : m,
+          mode,
+          seed,
+        }),
       });
       if (!res.ok) throw new Error((await res.json()).error ?? "swarm failed");
       const s = await res.json();
@@ -58,7 +69,7 @@ export default function CollapseLab() {
   }
 
   function reset() {
-    setContextId(uuid());
+    setBaseId(uuid());
     setRun(null);
     setError(null);
   }
@@ -67,8 +78,14 @@ export default function CollapseLab() {
     <div className="panel" style={{ padding: 20, display: "grid", gap: 18 }}>
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
         <div>
-          <div className="eyebrow">The collapse</div>
-          <h2 style={{ fontSize: 22, marginTop: 6 }}>Fire a swarm, watch it collapse to the real humans</h2>
+          <div className="eyebrow">Attacker console</div>
+          <h2 style={{ fontSize: 22, marginTop: 6 }}>Build your own sybil army</h2>
+          <p className="muted" style={{ fontSize: 13.5, marginTop: 6, maxWidth: 580, lineHeight: 1.5 }}>
+            You set the attacker&apos;s true power. Fire as many fakes as you like — the database accepts
+            exactly the number of{" "}
+            <strong style={{ color: "var(--text)" }}>real authenticators you actually control</strong>, never
+            the size of the swarm.
+          </p>
         </div>
         {store && (
           <span className="chip" title="The active ClaimStore backend">
@@ -85,7 +102,11 @@ export default function CollapseLab() {
         setCount={setCount}
         m={m}
         setM={setM}
+        seed={seed}
+        setSeed={setSeed}
+        onRandomizeSeed={() => setSeed(Math.floor(Math.random() * 100000))}
         running={running}
+        hasRun={!!run}
         onFire={fire}
         onReset={reset}
       />
@@ -102,6 +123,8 @@ export default function CollapseLab() {
       >
         <CollapseCanvas run={run} />
       </div>
+
+      <ResultHeadline run={run} />
 
       <div className="sr-only" role="status" aria-live="polite">
         {run
@@ -131,7 +154,11 @@ function Controls(props: {
   setCount: (c: number) => void;
   m: number;
   setM: (m: number) => void;
+  seed: number;
+  setSeed: (s: number) => void;
+  onRandomizeSeed: () => void;
   running: boolean;
+  hasRun: boolean;
   onFire: () => void;
   onReset: () => void;
 }) {
@@ -154,22 +181,71 @@ function Controls(props: {
       </Field>
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: 24 }}>
-        <Field label="Attempts">
+        <Field label="Fake attempts to fire (N)">
           <Segmented options={COUNTS.map((c) => ({ value: c, label: c.toLocaleString() }))} value={props.count} onChange={props.setCount} />
         </Field>
-        <Field label="Real credentials behind it (M)">
+        <Field label="Real authenticators you control (M)">
           <Segmented options={CREDENTIALS.map((c) => ({ value: c, label: String(c) }))} value={props.m} onChange={props.setM} disabled={props.mode === "forged"} />
+          <span className="faint" style={{ fontSize: 11.5, lineHeight: 1.4, maxWidth: 300 }}>
+            {props.mode === "forged"
+              ? "Forged-only: zero real credentials → zero accepted."
+              : "The one thing the attacker can't fake. In production a hardware passkey; here a simulated HMAC."}
+          </span>
+        </Field>
+        <Field label="Seed">
+          <div style={{ display: "flex", gap: 6 }}>
+            <input
+              className="mono"
+              type="number"
+              value={props.seed}
+              onChange={(e) => props.setSeed(Number(e.target.value) || 0)}
+              aria-label="Swarm seed"
+              style={{
+                width: 96,
+                background: "var(--bg-elev)",
+                border: "1px solid var(--border)",
+                borderRadius: "var(--radius-sm)",
+                color: "var(--text)",
+                padding: "10px 10px",
+                fontSize: 13,
+              }}
+            />
+            <button className="btn" onClick={props.onRandomizeSeed} disabled={props.running} title="Randomize the seed" aria-label="Randomize seed">
+              ⟳
+            </button>
+          </div>
         </Field>
       </div>
 
-      <div style={{ display: "flex", gap: 10 }}>
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
         <button className="btn btn-primary" onClick={props.onFire} disabled={props.running}>
-          {props.running ? "Collapsing…" : "Fire swarm"}
+          {props.running ? "Collapsing…" : "Fire the swarm"}
         </button>
+        {props.hasRun && (
+          <button className="btn" onClick={props.onFire} disabled={props.running} title="Same seed → byte-identical collapse">
+            Re-fire identical seed
+          </button>
+        )}
         <button className="btn" onClick={props.onReset} disabled={props.running}>
           Reset
         </button>
       </div>
+    </div>
+  );
+}
+
+/** The punchline: a flood of fakes resolving to exactly the number of real humans the attacker controls. */
+function ResultHeadline({ run }: { run: CollapseRun | null }) {
+  if (!run) return null;
+  return (
+    <div style={{ textAlign: "center", padding: "2px 0" }}>
+      <span className="mono" style={{ fontSize: "clamp(17px, 3.4vw, 26px)", fontWeight: 700 }}>
+        <span style={{ color: "var(--muted)" }}>{run.attempts.toLocaleString()} fakes</span>
+        <span style={{ color: "var(--faint)", margin: "0 12px" }}>→</span>
+        <span style={{ color: "var(--accent)", textShadow: "0 0 24px rgba(53,227,180,0.5)" }}>
+          {run.distinctFingerprints} real {run.distinctFingerprints === 1 ? "human" : "humans"}
+        </span>
+      </span>
     </div>
   );
 }
