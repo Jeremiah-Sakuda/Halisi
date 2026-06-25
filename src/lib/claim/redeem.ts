@@ -18,6 +18,7 @@ export async function redeem<A extends { contextId: string }>(
   assertion: A,
   claimId: string,
   now: number,
+  metadata?: Record<string, string>,
 ): Promise<ClaimOutcome> {
   const tVerify = performance.now();
   const verified = await issuer.verify(assertion);
@@ -36,6 +37,7 @@ export async function redeem<A extends { contextId: string }>(
     tokenId: verified.tokenId,
     claimId,
     createdAt: now,
+    metadata,
   });
   const latencyMs = performance.now() - tWrite;
 

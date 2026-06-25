@@ -125,6 +125,7 @@ export class DynamoClaimStore implements ClaimStore {
               fp: input.fingerprint,
               contextId: input.contextId,
               createdAt: input.createdAt,
+              ...(input.metadata ? { meta: input.metadata } : {}),
             },
             ConditionExpression: `attribute_not_exists(${ATTR.pk})`,
           },

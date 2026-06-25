@@ -29,6 +29,12 @@ export interface ClaimInput {
   /** Client-generated claim id (idempotent; no read-before-write). */
   claimId: string;
   createdAt: number;
+  /**
+   * Optional claim metadata recorded alongside the claim — e.g. the wallet an airdrop allocation is
+   * bound to. It never affects the accept/deny decision (uniqueness is still on the fingerprint); it is
+   * the durable record of where the one allowed claim went.
+   */
+  metadata?: Record<string, string>;
 }
 
 /** Only the store-level outcomes. Forgery is decided above the store, by the Issuer. */
