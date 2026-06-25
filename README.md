@@ -133,6 +133,7 @@ the animation, the counters, and entrance transitions.
 - [`ARCHITECTURE.md`](./ARCHITECTURE.md) — data model, redemption algorithm, collapse query, the
   two-store seam, the honest ceiling.
 - [`DISTINCTNESS.md`](./DISTINCTNESS.md) — what Halisi is, and what it deliberately is not.
+- [`THREAT_MODEL.md`](./THREAT_MODEL.md) — what's defeated, the honest ceiling, recovery roadmap.
 - [`SUBMISSION.md`](./SUBMISSION.md) — the submission writeup.
 - [`SECURITY.md`](./SECURITY.md) — what counts as a vulnerability, and the honest ceiling.
 - [`DEPLOY.md`](./DEPLOY.md) — provisioning, IAM policy, Vercel env, verification.

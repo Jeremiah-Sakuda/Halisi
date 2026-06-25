@@ -118,3 +118,5 @@ table.
 Halisi proves *one claim per attested credential*, not philosophical personhood. It resists synthetic
 swarms, replay, forgery, and credential reuse — raising the cost of a fake by orders of magnitude. It
 does not claim a perfect count of humans, and it stores fingerprint **hashes**, never identities or PII.
+See [`THREAT_MODEL.md`](./THREAT_MODEL.md) for the full in-scope / out-of-scope breakdown, why
+registration is the real cost, and the recovery/rotation roadmap.
