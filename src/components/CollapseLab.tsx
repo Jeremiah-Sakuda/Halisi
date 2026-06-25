@@ -93,7 +93,7 @@ export default function CollapseLab() {
       <div
         style={{
           position: "relative",
-          height: 360,
+          height: "clamp(280px, 56vw, 360px)",
           borderRadius: 14,
           border: "1px solid var(--border)",
           background: "radial-gradient(600px 300px at 50% 40%, rgba(124,92,255,0.08), transparent 70%)",
@@ -201,7 +201,7 @@ function Segmented<T extends number>({
   disabled?: boolean;
 }) {
   return (
-    <div style={{ display: "inline-flex", gap: 6, opacity: disabled ? 0.4 : 1, pointerEvents: disabled ? "none" : "auto" }}>
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 6, opacity: disabled ? 0.4 : 1, pointerEvents: disabled ? "none" : "auto" }}>
       {options.map((o) => (
         <button key={o.value} className="btn mono" onClick={() => onChange(o.value)} style={value === o.value ? activeStyle : undefined}>
           {o.label}
