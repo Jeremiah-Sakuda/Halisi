@@ -1,4 +1,4 @@
-import { newClaimId, newCredentialId } from "@/lib/ids";
+import { newClaimId } from "@/lib/ids";
 import type { Assertion } from "@/lib/issuer/Issuer";
 import { SimulatedAuthenticator, type SimulatedIssuer } from "@/lib/issuer/SimulatedIssuer";
 import { shortFingerprint } from "@/lib/hash";
@@ -49,10 +49,12 @@ interface PreparedAttempt {
   label: AttemptLabel;
 }
 
-function makeRegistered(issuer: SimulatedIssuer, m: number): SimulatedAuthenticator[] {
+// Credential ids are derived from the seed (not random) so the SAME (seed, count, M, mode) reproduces
+// the SAME fingerprints — a re-fire is byte-identical, and two engines can be compared in lockstep.
+function makeRegistered(issuer: SimulatedIssuer, m: number, seed: number): SimulatedAuthenticator[] {
   const auths: SimulatedAuthenticator[] = [];
   for (let i = 0; i < m; i++) {
-    const auth = new SimulatedAuthenticator(newCredentialId());
+    const auth = new SimulatedAuthenticator(`c-${seed}-${i}`);
     auth.registerWith(issuer);
     auths.push(auth);
   }
@@ -64,7 +66,8 @@ export async function buildSwarm(
   issuer: SimulatedIssuer,
   req: SwarmRequest,
 ): Promise<PreparedAttempt[]> {
-  const rand = mulberry32(req.seed ?? 0x1a2b3c);
+  const seed = req.seed ?? 0x1a2b3c;
+  const rand = mulberry32(seed);
   const m = Math.max(0, Math.min(req.distinctCredentials, req.count));
   const attempts: PreparedAttempt[] = [];
 
@@ -74,7 +77,7 @@ export async function buildSwarm(
   if (req.mode === "genuine") {
     // Each attempt is a distinct, freshly registered credential — all accepted.
     for (let i = 0; i < req.count; i++) {
-      const auth = new SimulatedAuthenticator(newCredentialId());
+      const auth = new SimulatedAuthenticator(`c-${seed}-${i}`);
       auth.registerWith(issuer);
       attempts.push({ assertion: await genuineFrom(auth), label: "genuine" });
     }
@@ -82,7 +85,7 @@ export async function buildSwarm(
   }
 
   if (req.mode === "forged") {
-    const strangers = makeStrangers(Math.min(req.count, 32));
+    const strangers = makeStrangers(Math.min(req.count, 32), seed);
     for (let i = 0; i < req.count; i++) {
       const stranger = strangers[i % strangers.length]!;
       const challenge = await issuer.issueChallenge(req.contextId);
@@ -94,7 +97,8 @@ export async function buildSwarm(
     return attempts;
   }
 
-  const registered = makeRegistered(issuer, Math.max(1, m));
+  const registered = makeRegistered(issuer, Math.max(1, m), seed);
+  const strangerPool = makeStrangers(32, seed);
   const seeds = await Promise.all(registered.map((a) => genuineFrom(a)));
   // The M genuine seeds are the only attempts that can be accepted.
   for (const assertion of seeds) attempts.push({ assertion, label: "genuine" });
@@ -104,7 +108,7 @@ export async function buildSwarm(
     const pick = req.mode === "mixed" ? Math.floor(rand() * 3) : modeChannel(req.mode);
     if (pick === 0) {
       // forged: a credential never registered
-      const stranger = makeStrangers(1)[0]!;
+      const stranger = strangerPool[i % strangerPool.length]!;
       const challenge = await issuer.issueChallenge(req.contextId);
       attempts.push({
         assertion: stranger.assert(challenge, { forgeAttestation: true }),
@@ -124,9 +128,9 @@ export async function buildSwarm(
   return shuffle(attempts, rand);
 }
 
-function makeStrangers(n: number): SimulatedAuthenticator[] {
+function makeStrangers(n: number, seed: number): SimulatedAuthenticator[] {
   const out: SimulatedAuthenticator[] = [];
-  for (let i = 0; i < n; i++) out.push(new SimulatedAuthenticator(newCredentialId()));
+  for (let i = 0; i < n; i++) out.push(new SimulatedAuthenticator(`s-${seed}-${i}`));
   return out;
 }
 
