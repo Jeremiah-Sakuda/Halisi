@@ -19,7 +19,17 @@ const FORBIDDEN = [
   /\bstampede\b/i,
 ];
 
-const ROOTS = ["src", "scripts", "README.md", "ARCHITECTURE.md", "DISTINCTNESS.md", "SUBMISSION.md", "DEPLOY.md"];
+const ROOTS = [
+  "src",
+  "scripts",
+  "README.md",
+  "ARCHITECTURE.md",
+  "DISTINCTNESS.md",
+  "SUBMISSION.md",
+  "DEPLOY.md",
+  "THREAT_MODEL.md",
+  "SECURITY.md",
+];
 
 function collectFiles(path: string, acc: string[]): void {
   const stat = statSync(path);
