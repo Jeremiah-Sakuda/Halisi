@@ -1,4 +1,5 @@
 import { ledger } from "@/lib/ledger";
+import { ensureStreamConsumer } from "@/lib/streams";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,6 +10,9 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(request: Request, { params }: { params: Promise<{ contextId: string }> }) {
   const { contextId } = await params;
+  // On the dynamo backend with HALISI_STREAMS=on, the ledger is fed by DynamoDB Streams (started here);
+  // otherwise the claim path publishes directly. Either way the SSE shape is identical.
+  await ensureStreamConsumer();
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream({

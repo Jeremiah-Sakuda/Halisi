@@ -51,7 +51,7 @@ export async function POST(request: Request) {
     (_, decision, fingerprint) => {
       metrics.record(body.contextId!, decision, 0);
       if (decision === "ACCEPTED" && fingerprint) {
-        ledger.publish({
+        ledger.publishFromClaim({
           contextId: body.contextId!,
           decision,
           fingerprint,

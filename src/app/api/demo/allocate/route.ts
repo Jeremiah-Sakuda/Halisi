@@ -45,7 +45,7 @@ export async function POST(request: Request) {
   const outcome = await redeem(issuer, store, assertion, newClaimId(), Date.now(), { wallet: body.wallet });
   metrics.record(outcome.contextId, outcome.decision, outcome.latencyMs);
   const fingerprint = outcome.fingerprint ? shortFingerprint(outcome.fingerprint) : undefined;
-  ledger.publish({
+  ledger.publishFromClaim({
     contextId: outcome.contextId,
     decision: outcome.decision,
     fingerprint,

@@ -48,7 +48,7 @@ export async function POST(request: Request) {
   );
 
   metrics.record(outcome.contextId, outcome.decision, outcome.latencyMs);
-  ledger.publish({
+  ledger.publishFromClaim({
     contextId: outcome.contextId,
     decision: outcome.decision,
     fingerprint: outcome.fingerprint ? shortFingerprint(outcome.fingerprint) : undefined,
