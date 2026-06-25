@@ -22,6 +22,26 @@ class Ledger {
   private readonly listeners = new Map<string, Set<Listener>>();
   /** Running distinct-fingerprint set per context, so a late subscriber can render the collapse count. */
   private readonly distinct = new Map<string, Set<string>>();
+  /** When a Streams consumer owns the feed, the claim path stops publishing to avoid duplicates. */
+  private streamsActive = false;
+
+  /** A Streams consumer calls this on start to become the source of truth for the feed. */
+  setStreamsActive(active: boolean): void {
+    this.streamsActive = active;
+  }
+
+  get streamsOwned(): boolean {
+    return this.streamsActive;
+  }
+
+  /**
+   * Publish from the claim path. A no-op when a Streams consumer owns the feed — in that mode the
+   * accepted-claim event arrives via DynamoDB Streams instead, exactly as it would in production.
+   */
+  publishFromClaim(event: LedgerEvent): void {
+    if (this.streamsActive) return;
+    this.publish(event);
+  }
 
   subscribe(contextId: string, listener: Listener): () => void {
     let set = this.listeners.get(contextId);
