@@ -58,10 +58,10 @@ gets **at most M** accepted claims — the rest fail at the write, in single-dig
                          │   • burn  REDEMPTION#<tokenId>   │  attribute_not_exists  → replay denied
                          │   • write CLAIM#<ctx>#<fp>       │  attribute_not_exists  → duplicate denied
                          │   GSI1 (CTX#<ctx>) ─ collapse ───┼──▶ N distinct credentials
-                         │   Streams (enabled, prod path) ──┼──▶ live ledger
+                         │   Streams ── consumer (streams.ts) ─▶ live ledger
                          └─────────────────────────────────┘
-              (in the demo the claim path publishes to the SSE ledger in-process;
-               the table has Streams enabled for the production consumer)
+              (default: the claim path publishes to the SSE ledger in-process;
+               HALISI_STREAMS=on feeds it from DynamoDB Streams instead)
 ```
 
 See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the full data model, the redemption algorithm, and the

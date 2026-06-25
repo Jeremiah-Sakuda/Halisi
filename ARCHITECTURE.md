@@ -36,8 +36,11 @@ of N attempts collapses to M distinct credentials.
                          │   GSI1 (CTX#<ctx>) ── collapse Query ──────┼──▶ N distinct credentials
                          │   Streams (enabled) ───── prod consumer ───┼┄▶ SSE live ledger
                          └───────────────────────────────────────────┘
-   In the demo the claim path publishes to the SSE ledger in-process (ledger.ts); the table has Streams
-   enabled (NEW_IMAGE) so a production consumer can drive the same feed without code changes downstream.
+   By default the claim path publishes to the SSE ledger in-process (ledger.ts). Set HALISI_STREAMS=on on
+   the dynamo backend to feed the ledger from DynamoDB Streams via the consumer in streams.ts instead —
+   it tails the stream (DescribeStream / GetShardIterator / GetRecords), turns each new CLAIM image into a
+   ledger event, and the claim path stops publishing so there are no duplicates. Production deploys that
+   same consumer as a stream-triggered Lambda; `npm run streams` tails it standalone.
 ```
 
 The two seams:

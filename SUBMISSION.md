@@ -28,8 +28,9 @@ query, not an ML guess.
   distinguish a replay from a duplicate identity.
 - **One GSI for the collapse.** `GSI1` partitions every claim under its context, so counting distinct
   credentials is a single `Query`, never a scan.
-- **Streams** are enabled (`NEW_IMAGE`) as the production fan-out for the live ledger; the demo publishes
-  each accepted claim to the SSE feed in-process so it runs with no extra infrastructure.
+- **Streams** feed the live ledger through a real consumer (`src/lib/streams.ts`): set `HALISI_STREAMS=on`
+  and each new CLAIM image arrives via DynamoDB Streams; production deploys the same consumer as a
+  stream-triggered Lambda. The default (claim-path publish) keeps the demo zero-infrastructure.
 - **On-demand capacity** — the cost story is pennies at 10k writes.
 
 See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the full data model and the redemption algorithm.
