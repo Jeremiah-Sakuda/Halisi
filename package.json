@@ -17,10 +17,12 @@
     "test:watch": "vitest",
     "provision": "tsx scripts/provision-table.ts",
     "live": "tsx scripts/live-suite.ts",
-    "swarm": "tsx scripts/swarm-bench.ts"
+    "swarm": "tsx scripts/swarm-bench.ts",
+    "streams": "tsx scripts/stream-consumer.ts"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.637.0",
+    "@aws-sdk/client-dynamodb-streams": "^3.1075.0",
     "@aws-sdk/lib-dynamodb": "^3.637.0",
     "next": "^15.3.0",
     "react": "^19.1.0",
