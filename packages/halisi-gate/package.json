@@ -1,0 +1,23 @@
+{
+  "name": "halisi-gate",
+  "version": "0.1.0",
+  "description": "Drop-in gate that keeps bot and AI-agent swarms out of a human-only action — one claim per attested human, enforced at the DynamoDB write by a Halisi endpoint.",
+  "type": "module",
+  "main": "./index.mjs",
+  "exports": {
+    ".": "./index.mjs"
+  },
+  "bin": {
+    "halisi-gate": "./bin/halisi-gate.mjs"
+  },
+  "files": [
+    "index.mjs",
+    "bin",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": ["sybil", "webauthn", "rate-limit", "anti-abuse", "dynamodb", "middleware"],
+  "license": "MIT"
+}
