@@ -20,11 +20,12 @@ export default function Hero() {
       </h1>
       <p
         className="muted"
-        style={{ maxWidth: 660, margin: "22px auto 0", fontSize: 18, lineHeight: 1.6 }}
+        style={{ maxWidth: 680, margin: "22px auto 0", fontSize: 18, lineHeight: 1.6 }}
       >
-        Halisi collapses a flood of synthetic identities down to the real humans behind them — making{" "}
-        <strong style={{ color: "var(--text)" }}>one claim per attested credential</strong> a hard
-        invariant inside Amazon DynamoDB, denied at the write, not flagged after the fact.
+        One free trial, one vote, one airdrop — <strong style={{ color: "var(--text)" }}>per real human</strong>.
+        Halisi is the gate that keeps bot farms and AI-agent swarms out of human-only goods, making{" "}
+        <strong style={{ color: "var(--text)" }}>one claim per attested credential</strong> a hard invariant
+        inside Amazon DynamoDB — denied at the write, not flagged after the fact.
       </p>
       <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 28, flexWrap: "wrap" }}>
         <a className="btn btn-primary" href="#collapse">Watch the collapse</a>
