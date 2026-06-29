@@ -1,11 +1,13 @@
 import { Mutex } from "@/lib/mutex";
 import type { CollapseResult, Context } from "@/lib/types";
-import type {
-  ClaimInput,
-  ClaimStore,
-  CreateContextInput,
-  StoreClaimResult,
+import {
+  buildClaimWrite,
+  type ClaimInput,
+  type ClaimStore,
+  type CreateContextInput,
+  type StoreClaimResult,
 } from "@/lib/store/ClaimStore";
+import { claimPk, redemptionPk } from "@/lib/store/schema";
 
 interface StoredClaim {
   claimId: string;
@@ -56,15 +58,31 @@ export class MemoryClaimStore implements ClaimStore {
       // A real async boundary so the lock is doing real work under concurrency.
       await Promise.resolve();
 
+      const keys = {
+        redemption: redemptionPk(input.tokenId),
+        claim: claimPk(input.contextId, input.fingerprint),
+      };
+      const bucket = this.claimsByContext.get(input.contextId);
+      // Evaluate both conditions, exactly as the DynamoDB transaction reports them.
+      const tokenExists = this.redemptions.has(input.tokenId);
+      const claimExists = bucket?.has(input.fingerprint) ?? false;
+
       // Condition (a): the single-use token must not already be redeemed.
-      if (this.redemptions.has(input.tokenId)) {
-        return { decision: "DENIED_REPLAY", claimId: input.claimId };
+      if (tokenExists) {
+        return {
+          decision: "DENIED_REPLAY",
+          claimId: input.claimId,
+          write: buildClaimWrite(keys, false, !claimExists, false),
+        };
       }
 
       // Condition (b): this credential must not already hold a claim in this context.
-      const bucket = this.claimsByContext.get(input.contextId);
-      if (bucket?.has(input.fingerprint)) {
-        return { decision: "DENIED_DUPLICATE_IDENTITY", claimId: input.claimId };
+      if (claimExists) {
+        return {
+          decision: "DENIED_DUPLICATE_IDENTITY",
+          claimId: input.claimId,
+          write: buildClaimWrite(keys, true, false, false),
+        };
       }
 
       // Both conditions pass: commit the redemption and the claim atomically.
@@ -77,7 +95,11 @@ export class MemoryClaimStore implements ClaimStore {
         contextId: input.contextId,
         createdAt: input.createdAt,
       });
-      return { decision: "ACCEPTED", claimId: input.claimId };
+      return {
+        decision: "ACCEPTED",
+        claimId: input.claimId,
+        write: buildClaimWrite(keys, true, true, true),
+      };
     });
   }
 

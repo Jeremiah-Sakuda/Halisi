@@ -6,11 +6,12 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 
 import type { CollapseResult, Context } from "@/lib/types";
-import type {
-  ClaimInput,
-  ClaimStore,
-  CreateContextInput,
-  StoreClaimResult,
+import {
+  buildClaimWrite,
+  type ClaimInput,
+  type ClaimStore,
+  type CreateContextInput,
+  type StoreClaimResult,
 } from "@/lib/store/ClaimStore";
 import {
   ATTR,
@@ -133,18 +134,30 @@ export class DynamoClaimStore implements ClaimStore {
       ],
     });
 
+    const keys = {
+      redemption: redemptionPk(input.tokenId),
+      claim: claimPk(input.contextId, input.fingerprint),
+    };
+
     try {
       await this.client.send(command);
-      return { decision: "ACCEPTED", claimId: input.claimId };
+      return {
+        decision: "ACCEPTED",
+        claimId: input.claimId,
+        write: buildClaimWrite(keys, true, true, true),
+      };
     } catch (error) {
       if (isTransactionCanceled(error)) {
         const reasons = error.CancellationReasons ?? [];
+        const redemptionOk = reasons[0]?.Code !== "ConditionalCheckFailed";
+        const claimOk = reasons[1]?.Code !== "ConditionalCheckFailed";
+        const write = buildClaimWrite(keys, redemptionOk, claimOk, false);
         // Token already burned takes precedence: it is the defining feature of a replay.
-        if (reasons[0]?.Code === "ConditionalCheckFailed") {
-          return { decision: "DENIED_REPLAY", claimId: input.claimId };
+        if (!redemptionOk) {
+          return { decision: "DENIED_REPLAY", claimId: input.claimId, write };
         }
-        if (reasons[1]?.Code === "ConditionalCheckFailed") {
-          return { decision: "DENIED_DUPLICATE_IDENTITY", claimId: input.claimId };
+        if (!claimOk) {
+          return { decision: "DENIED_DUPLICATE_IDENTITY", claimId: input.claimId, write };
         }
       }
       throw error;
