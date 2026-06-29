@@ -57,6 +57,7 @@ export async function POST(request: Request) {
     decision: outcome.decision,
     latencyMs: outcome.latencyMs,
     fingerprint: fingerprint ?? null,
+    write: outcome.write ?? null,
     wallet: body.wallet,
   });
 }

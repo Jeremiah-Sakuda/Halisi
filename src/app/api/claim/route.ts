@@ -61,5 +61,6 @@ export async function POST(request: Request) {
     claimId: outcome.claimId ?? null,
     latencyMs: outcome.latencyMs,
     fingerprint: outcome.fingerprint ? shortFingerprint(outcome.fingerprint) : null,
+    write: outcome.write ?? null,
   });
 }

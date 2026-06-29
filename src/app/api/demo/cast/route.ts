@@ -56,6 +56,8 @@ export async function POST(request: Request) {
     decision: outcome.decision,
     latencyMs: outcome.latencyMs,
     fingerprint: fingerprint ?? null,
+    // The real two-condition TransactWriteItems that produced this decision (for the write-readout).
+    write: outcome.write ?? null,
     // The verified assertion, so the client can replay the exact same token.
     assertion,
   });

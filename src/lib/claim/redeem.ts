@@ -47,5 +47,6 @@ export async function redeem<A extends { contextId: string }>(
     claimId: result.decision === "ACCEPTED" ? result.claimId : undefined,
     fingerprint: verified.fingerprint,
     latencyMs,
+    write: result.write,
   };
 }
