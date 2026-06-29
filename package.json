@@ -18,7 +18,8 @@
     "provision": "tsx scripts/provision-table.ts",
     "live": "tsx scripts/live-suite.ts",
     "swarm": "tsx scripts/swarm-bench.ts",
-    "streams": "tsx scripts/stream-consumer.ts"
+    "streams": "tsx scripts/stream-consumer.ts",
+    "verify": "node scripts/verify-receipt.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.637.0",
