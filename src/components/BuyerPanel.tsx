@@ -9,26 +9,30 @@ export default function BuyerPanel() {
       <div>
         <div className="eyebrow">Who pays for this</div>
         <h2 style={{ fontSize: 26, marginTop: 8 }}>Consumer-facing, platform-paid.</h2>
-        <p className="muted" style={{ maxWidth: 700, marginTop: 10, fontSize: 15, lineHeight: 1.6 }}>
-          End users just experience an abundant action — one vote, one trial, one allocation. Platforms pay
-          Halisi to keep that action honest: a usage-based fee <strong style={{ color: "var(--text)" }}>per
-          accepted unique claim</strong>. Denials are free — we only charge when exactly one real human is
-          let through.
+        <p className="muted" style={{ maxWidth: 720, marginTop: 10, fontSize: 15, lineHeight: 1.6 }}>
+          End users just start a free trial (or vote, or claim an allocation). Platforms pay Halisi to keep
+          that action human: a usage-based fee <strong style={{ color: "var(--text)" }}>per accepted unique
+          human</strong>. Denials are free — and that is the pricing guarantee, not a caveat:{" "}
+          <strong style={{ color: "var(--text)" }}>you pay only for the real humans we let through, never the
+          swarm</strong>. The &ldquo;one credential, not one person&rdquo; ceiling is exactly the unit you
+          are billed on.
         </p>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
         <Wedge
-          tag="Wedge · Web3"
-          title="Airdrop sybil resistance"
-          body="Token distributions routinely lose double-digit percentages of allocation to sybils. “One allocation per attested credential” turns that loss into a write-time guarantee."
-          href="/airdrop"
-          cta="Try the airdrop flow →"
-        />
-        <Wedge
           tag="Wedge · PLG"
           title="Free-trial & fake-signup abuse"
-          body="Trial farming burns infra spend and pollutes activation metrics. “One trial per real credential” maps cleanly to deny-at-write, not ban-tomorrow."
+          body="Trial farming burns infra spend and pollutes activation metrics — and AI agents now spin up signups at scale. “One trial per real human” is a deny-at-write gate, not ban-tomorrow."
+          href="/"
+          cta="Try the free-trial gate ↑"
+        />
+        <Wedge
+          tag="Wedge · Web3"
+          title="Airdrop sybil resistance"
+          body="Token distributions routinely lose double-digit percentages of allocation to sybils. “One allocation per attested human” turns that loss into a write-time guarantee."
+          href="/airdrop"
+          cta="Try the airdrop flow →"
         />
         <Wedge
           tag="Adjacent"
