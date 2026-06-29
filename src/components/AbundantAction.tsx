@@ -1,18 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { ClaimDecision, ClaimWrite } from "@/lib/types";
 import LiveLedger from "./LiveLedger";
+import WriteReadout from "./WriteReadout";
 
 interface CastResult {
-  decision: string;
+  decision: ClaimDecision;
   latencyMs: number;
   fingerprint: string | null;
+  write: ClaimWrite | null;
   assertion: unknown;
 }
 
-const DECISION_COPY: Record<string, { label: string; color: string }> = {
-  ACCEPTED: { label: "Accepted — your one vote is recorded", color: "var(--accent)" },
-  DENIED_DUPLICATE_IDENTITY: { label: "Denied — this device already voted", color: "var(--duplicate)" },
+interface LatestClaim {
+  decision: ClaimDecision;
+  latencyMs: number;
+  write: ClaimWrite | null;
+  kind: "trial" | "replay";
+}
+
+const DECISION_COPY: Record<ClaimDecision, { label: string; color: string }> = {
+  ACCEPTED: { label: "Free trial started — one per human", color: "var(--accent)" },
+  DENIED_DUPLICATE_IDENTITY: { label: "Denied — this device already used its free trial", color: "var(--duplicate)" },
   DENIED_REPLAY: { label: "Denied — that token was already redeemed", color: "var(--replay)" },
   DENIED_FORGED: { label: "Denied — that credential never verified", color: "var(--forged)" },
 };
@@ -31,24 +41,25 @@ export default function AbundantAction() {
   const [contextId, setContextId] = useState<string>("");
   const [device, setDevice] = useState<string>("");
   const [result, setResult] = useState<CastResult | null>(null);
-  const [replay, setReplay] = useState<string | null>(null);
+  const [latest, setLatest] = useState<LatestClaim | null>(null);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    setContextId(`vote_${Math.random().toString(36).slice(2)}`);
+    setContextId(`trial_${Math.random().toString(36).slice(2)}`);
     setDevice(deviceId());
   }, []);
 
-  async function cast() {
+  async function startTrial() {
     setBusy(true);
-    setReplay(null);
     try {
       const res = await fetch("/api/demo/cast", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ contextId, deviceId: device }),
       });
-      setResult(await res.json());
+      const r: CastResult = await res.json();
+      setResult(r);
+      setLatest({ decision: r.decision, latencyMs: r.latencyMs, write: r.write, kind: "trial" });
     } finally {
       setBusy(false);
     }
@@ -64,7 +75,7 @@ export default function AbundantAction() {
         body: JSON.stringify({ assertion: result.assertion, claimId: crypto.randomUUID() }),
       });
       const r = await res.json();
-      setReplay(r.decision);
+      setLatest({ decision: r.decision, latencyMs: r.latencyMs, write: r.write, kind: "replay" });
     } finally {
       setBusy(false);
     }
@@ -74,29 +85,30 @@ export default function AbundantAction() {
     localStorage.removeItem("halisi-device");
     setDevice(deviceId());
     setResult(null);
-    setReplay(null);
+    setLatest(null);
   }
 
-  const copy = result ? DECISION_COPY[result.decision] : null;
+  const copy = latest ? DECISION_COPY[latest.decision] : null;
 
   return (
     <div className="panel" style={{ padding: 22, display: "grid", gap: 16 }}>
       <div>
-        <div className="eyebrow">One vote</div>
-        <h2 style={{ fontSize: 22, marginTop: 6 }}>Cast your one vote</h2>
-        <p className="muted" style={{ marginTop: 8, fontSize: 14, lineHeight: 1.55, maxWidth: 560 }}>
-          Nothing here is scarce — the poll never closes and never sells out. The only rule is{" "}
-          <strong style={{ color: "var(--text)" }}>one vote per real device</strong>. Vote, then try to
-          vote again or replay the same token: the database denies it at the write.
+        <div className="eyebrow">One free trial per human</div>
+        <h2 style={{ fontSize: 22, marginTop: 6 }}>Start your free trial</h2>
+        <p className="muted" style={{ marginTop: 8, fontSize: 14, lineHeight: 1.55, maxWidth: 580 }}>
+          Free trials are abundant — this one never expires, and any number of real people can start one.
+          The only rule is <strong style={{ color: "var(--text)" }}>one trial per real human</strong>. Start
+          a trial, then try to start another or replay the token — and watch DynamoDB deny it at the write
+          below.
         </p>
       </div>
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-        <button className="btn btn-primary" onClick={cast} disabled={busy || !contextId}>
-          Cast your one vote
+        <button className="btn btn-primary" onClick={startTrial} disabled={busy || !contextId}>
+          Start your free trial
         </button>
-        <button className="btn" onClick={cast} disabled={busy || !result}>
-          Try to vote again
+        <button className="btn" onClick={startTrial} disabled={busy || !result}>
+          Start another trial
         </button>
         <button className="btn" onClick={replayToken} disabled={busy || !result?.assertion}>
           Replay the same token
@@ -106,14 +118,14 @@ export default function AbundantAction() {
         </button>
       </div>
 
-      {copy && (
+      {copy && latest && (
         <div
           className="rise"
           style={{
             border: `1px solid ${copy.color}`,
             background: "rgba(255,255,255,0.03)",
             borderRadius: 12,
-            padding: "14px 16px",
+            padding: "12px 16px",
             display: "flex",
             alignItems: "center",
             gap: 12,
@@ -122,16 +134,16 @@ export default function AbundantAction() {
         >
           <span style={{ width: 10, height: 10, borderRadius: "50%", background: copy.color, boxShadow: `0 0 10px ${copy.color}` }} />
           <strong style={{ color: copy.color }}>{copy.label}</strong>
-          {result?.fingerprint && (
+          {latest.kind === "replay" && <span className="chip" style={{ borderColor: "var(--replay)" }}>replayed token</span>}
+          {result?.fingerprint && latest.kind === "trial" && (
             <span className="chip mono" style={{ marginLeft: "auto" }}>credential {result.fingerprint}</span>
           )}
-          <span className="mono muted" style={{ fontSize: 12 }}>{result?.latencyMs.toFixed(2)} ms at the write</span>
         </div>
       )}
 
-      {replay && (
-        <div className="mono" style={{ fontSize: 13, color: "var(--replay)" }}>
-          replay of the same token → {replay}
+      {latest && (
+        <div className="rise">
+          <WriteReadout decision={latest.decision} latencyMs={latest.latencyMs} write={latest.write} />
         </div>
       )}
 
