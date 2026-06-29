@@ -139,6 +139,23 @@ node scripts/verify-receipt.mjs halisi-receipt.json
 #   PASS · 9997 denials independently re-derived · collapse to 3 distinct credentials VERIFIED
 ```
 
+## Drop it into any app (`halisi-gate`)
+
+The same invariant is a one-line middleware. [`packages/halisi-gate`](./packages/halisi-gate) is a
+zero-dependency package that keeps any action one-per-human by delegating the decision to a Halisi
+endpoint:
+
+```js
+import { halisiGate } from "halisi-gate";
+
+app.post("/free-signup", halisiGate({ endpoint: process.env.HALISI_ENDPOINT, context: "free-signup" }),
+  (req, res) => res.send("welcome")); // only real, first-time humans reach here
+```
+
+A second signup from the same device gets a `403 DENIED_DUPLICATE_IDENTITY` — the guarantee teleports
+into foreign code with no business-logic changes. There's a runnable example app under
+`packages/halisi-gate/example`.
+
 ## Accessibility
 
 Keyboard focus is always visible (`:focus-visible`), the collapse is exposed to assistive tech as a
