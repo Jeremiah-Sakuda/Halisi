@@ -74,6 +74,21 @@ export default function CollapseLab() {
     setError(null);
   }
 
+  async function downloadReceipt() {
+    const res = await fetch("/api/harness/receipt", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ count, distinctCredentials: mode === "forged" ? 0 : m, mode, seed }),
+    });
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "halisi-receipt.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="panel" style={{ padding: 20, display: "grid", gap: 18 }}>
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
@@ -143,6 +158,29 @@ export default function CollapseLab() {
       )}
       <DenialLegend run={run} />
       <NodeList run={run} />
+
+      <div
+        style={{
+          border: "1px dashed var(--border-strong)",
+          borderRadius: 12,
+          padding: "12px 14px",
+          display: "grid",
+          gap: 8,
+        }}
+      >
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10 }}>
+          <button className="btn" onClick={downloadReceipt} disabled={running}>
+            Download signed receipt
+          </button>
+          <span className="faint" style={{ fontSize: 12.5, lineHeight: 1.4 }}>
+            Take the proof home — turn Wi-Fi off and re-verify the collapse yourself, no trust required.
+          </span>
+        </div>
+        <code className="mono" style={{ fontSize: 12, color: "var(--muted)", overflowWrap: "anywhere" }}>
+          node scripts/verify-receipt.mjs halisi-receipt.json
+        </code>
+      </div>
+
       <a href="/proof" style={{ fontSize: 13, color: "var(--accent)", fontWeight: 600, textDecoration: "none" }}>
         Think the real DynamoDB would behave differently? See both engines run in lockstep →
       </a>
