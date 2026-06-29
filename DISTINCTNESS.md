@@ -23,6 +23,10 @@ per-write latency and the (pennies) AWS cost ticking alongside. The atomic condi
 makes it true is necessary and correct, but it is supporting cast. Halisi's identity is **unmasking**:
 the database as the agent that reveals the real humans, not as a ledger, a lock, or an allocator.
 
-**Honest ceiling.** Halisi proves *one claim per attested credential*, not philosophical personhood. It
-defeats synthetic swarms, replay, forgery, and credential reuse — raising the cost of a fake by orders of
-magnitude — and it says so plainly rather than overclaiming.
+**Honest ceiling — and why it's the pricing unit.** Halisi proves *one claim per attested credential*,
+not philosophical personhood. It defeats synthetic swarms, replay, forgery, and credential reuse — raising
+the cost of a fake by orders of magnitude — and it says so plainly rather than overclaiming. That ceiling
+is not a weakness to apologize for; it is the **meter**: platforms pay per accepted real human, never per
+attempt, so "one credential, not one person" is exactly the unit you are billed on. You don't need
+philosophical personhood to evict a bot or AI-agent farm — one human-held authenticator per unit is
+precisely enough.
