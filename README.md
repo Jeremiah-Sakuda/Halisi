@@ -122,6 +122,23 @@ npm test        # the full suite (memory + dynamo code paths)
 npm run typecheck
 ```
 
+## Offline-verifiable proof (the receipt)
+
+You don't have to trust the demo. Any swarm can emit a **signed receipt** — every attempt's
+`(fingerprint, token, decision)`, the final collapse, a Merkle root over the attempts, and an Ed25519
+signature. The companion verifier runs with **no network and no npm install**, and it **re-derives** the
+collapse from the raw attempts (it does not replay a log), so a tampered "everyone got in" receipt fails:
+
+```bash
+# download a receipt from the attacker console, then, with Wi-Fi off:
+node scripts/verify-receipt.mjs halisi-receipt.json
+#   ✓ Merkle root commits to the attempts
+#   ✓ Ed25519 signature
+#   ✓ re-derived 10000 decisions — all match
+#   ✓ collapse to 3 distinct credentials
+#   PASS · 9997 denials independently re-derived · collapse to 3 distinct credentials VERIFIED
+```
+
 ## Accessibility
 
 Keyboard focus is always visible (`:focus-visible`), the collapse is exposed to assistive tech as a
