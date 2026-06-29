@@ -1,4 +1,4 @@
-import type { CollapseResult, Context, ContextKind } from "@/lib/types";
+import type { ClaimWrite, CollapseResult, Context, ContextKind } from "@/lib/types";
 
 /**
  * The ClaimStore is the seam that expresses Halisi's invariant. Two implementations live behind it —
@@ -46,6 +46,25 @@ export type StoreDecision =
 export interface StoreClaimResult {
   decision: StoreDecision;
   claimId: string;
+  /** The two-condition transaction that produced this decision. */
+  write: ClaimWrite;
+}
+
+/** Build the write payload from the two condition outcomes — shared by every store for parity. */
+export function buildClaimWrite(
+  keys: { redemption: string; claim: string },
+  redemptionOk: boolean,
+  claimOk: boolean,
+  committed: boolean,
+): ClaimWrite {
+  return {
+    operation: "TransactWriteItems",
+    conditions: [
+      { entity: "redemption", key: keys.redemption, condition: "attribute_not_exists(PK)", status: redemptionOk ? "ok" : "blocked" },
+      { entity: "claim", key: keys.claim, condition: "attribute_not_exists(PK)", status: claimOk ? "ok" : "blocked" },
+    ],
+    committed,
+  };
 }
 
 export interface ClaimStore {

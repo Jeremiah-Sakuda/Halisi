@@ -31,7 +31,26 @@ export type ClaimDecision =
   | "DENIED_REPLAY"
   | "DENIED_DUPLICATE_IDENTITY";
 
-/** A decision plus the evidence the demo surfaces: which claim, and how fast the write was. */
+/**
+ * One condition inside the redemption transaction. `ok` = the `attribute_not_exists` condition held;
+ * `blocked` = it failed (ConditionalCheckFailed) — which is what decides DENIED_REPLAY vs
+ * DENIED_DUPLICATE_IDENTITY. Surfaced so the demo can render the real per-write decision.
+ */
+export interface WriteCondition {
+  entity: "redemption" | "claim";
+  key: string;
+  condition: string;
+  status: "ok" | "blocked";
+}
+
+/** The actual `TransactWriteItems` the store ran, for the on-screen write-readout. */
+export interface ClaimWrite {
+  operation: "TransactWriteItems";
+  conditions: WriteCondition[];
+  committed: boolean;
+}
+
+/** A decision plus the evidence the demo surfaces: which claim, how fast, and the real write. */
 export interface ClaimOutcome {
   decision: ClaimDecision;
   contextId: string;
@@ -41,6 +60,8 @@ export interface ClaimOutcome {
   fingerprint?: string;
   /** Wall-clock time spent inside the store's conditional write, in milliseconds. */
   latencyMs: number;
+  /** The two-condition transaction that produced the decision. Absent when the assertion was forged. */
+  write?: ClaimWrite;
 }
 
 /** The result of the collapse query: a swarm of attempts reduced to its distinct credentials. */
